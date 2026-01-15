@@ -1,6 +1,13 @@
 import { Token } from "../Tokenizer/Token";
 import { tokenize } from "../Tokenizer/Lexer";
-import { ASTNode, CallExpression, FunctionDeclaration, LambdaExpression, Program } from "./AST/ASTNode";
+import {
+    ASTNode,
+    CallExpression,
+    ConditionalStatement,
+    FunctionDeclaration,
+    LambdaExpression,
+    Program,
+} from "./AST/ASTNode";
 
 export class Parser {
     private tokens: ReadonlyArray<Token>;
@@ -29,6 +36,10 @@ export class Parser {
     private walk(): ASTNode {
         let token = this.consume();
 
+        if (!token) {
+            throw new Error("Unexpected end of input");
+        }
+
         if (token.type === "NUMBER") {
             return { type: "Literal", value: Number(token.value), kind: "number" };
         }
@@ -44,26 +55,21 @@ export class Parser {
         if (token.type === "PAREN" && token.value === "(") {
             const next = this.peek();
 
-            if (!next || (next.type === "PAREN" && next.value === ")")) {
+            if (next && next.value === ")") {
                 this.consume();
-
                 return { type: "CallExpression", callee: "void", arguments: [] };
             }
 
-            if (next.type === "SYMBOL" && next.value === "lambda") {
-                return this.handleLambda();
-            }
-
-            if (next.type === "SYMBOL" && next.value === "defun") {
-                return this.handleFunction();
+            if (next.type === "SYMBOL") {
+                if (next.value === "lambda") return this.handleLambda();
+                if (next.value === "defun") return this.handleFunction();
+                if (next.value === "case") return this.handleConditional();
             }
 
             if (next.type === "PAREN" && next.value === "(") {
-                const expression = this.walk();
-
-                this.consume();
-
-                return expression;
+                const inner = this.walk();
+                if (this.peek()?.value === ")") this.consume();
+                return inner;
             }
 
             const calleeToken = this.consume();
@@ -73,15 +79,15 @@ export class Parser {
                 arguments: [],
             };
 
-            while (this.peek() && (this.peek().type !== "PAREN" || this.peek().value !== ")")) {
+            while (this.peek() && this.peek().value !== ")") {
                 callExp.arguments.push(this.walk());
             }
 
-            this.consume();
+            if (this.peek()?.value === ")") this.consume();
             return callExp;
         }
 
-        throw new TypeError(`Unexpected token type: ${token.type}`);
+        throw new TypeError(`Unexpected token type: ${token.type} value: ${token.value}`);
     }
 
     private handleLambda(): LambdaExpression {
@@ -138,6 +144,26 @@ export class Parser {
             body,
         };
     }
+
+    private handleConditional(): ConditionalStatement {
+        this.consume();
+        this.consume();
+
+        const body: ASTNode[] = [];
+        const test = this.walk();
+
+        while (this.peek() && this.peek().value !== ")") {
+            body.push(this.walk());
+        }
+
+        this.consume();
+
+        return {
+            type: "ConditionalStatement",
+            test,
+            body,
+        };
+    }
 }
 
 console.log(
@@ -162,6 +188,11 @@ console.log(
 ))
 
 (let s (lambda (x) (x + 1)))
+
+(defun equals1 (x) (
+    (case (= x 1) (emit true))
+    (case (!= x 1) (emit false))
+))
 `),
         ).parse(),
         null,
