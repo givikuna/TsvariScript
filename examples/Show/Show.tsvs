@@ -24,7 +24,7 @@
 
 (print (decrement 1))
 
-(export class ExampleClass
+(class ExampleClass
     (priv field)
     (constructor (field)
         (setf this.field field))

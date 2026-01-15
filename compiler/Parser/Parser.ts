@@ -1,6 +1,6 @@
 import { Token } from "../Tokenizer/Token";
 import { tokenize } from "../Tokenizer/Lexer";
-import { ASTNode, CallExpression, Program } from "./AST/ASTNode";
+import { ASTNode, CallExpression, LambdaExpression, Program } from "./AST/ASTNode";
 
 export class Parser {
     private tokens: ReadonlyArray<Token>;
@@ -45,41 +45,20 @@ export class Parser {
             const next = this.peek();
 
             if (!next || (next.type === "PAREN" && next.value === ")")) {
-                this.consume(); // consume ")"
+                this.consume();
+
                 return { type: "CallExpression", callee: "void", arguments: [] };
             }
 
             if (next.type === "SYMBOL" && next.value === "lambda") {
-                this.consume();
-                this.consume();
-
-                const params: string[] = [];
-                const body: ASTNode[] = [];
-
-                while (this.peek() && this.peek().value !== ")") {
-                    params.push(this.consume().value);
-                }
-
-                this.consume();
-                this.consume();
-
-                while (this.peek() && this.peek().value !== ")") {
-                    body.push(this.walk());
-                }
-
-                this.consume();
-                this.consume();
-
-                return {
-                    type: "LambdaExpression",
-                    params,
-                    body,
-                };
+                return this.handleLambda();
             }
 
             if (next.type === "PAREN" && next.value === "(") {
                 const expression = this.walk();
+
                 this.consume();
+
                 return expression;
             }
 
@@ -99,6 +78,34 @@ export class Parser {
         }
 
         throw new TypeError(`Unexpected token type: ${token.type}`);
+    }
+
+    private handleLambda(): LambdaExpression {
+        this.consume();
+        this.consume();
+
+        const params: string[] = [];
+        const body: ASTNode[] = [];
+
+        while (this.peek() && this.peek().value !== ")") {
+            params.push(this.consume().value);
+        }
+
+        this.consume();
+        this.consume();
+
+        while (this.peek() && this.peek().value !== ")") {
+            body.push(this.walk());
+        }
+
+        this.consume();
+        this.consume();
+
+        return {
+            type: "LambdaExpression",
+            params,
+            body,
+        };
     }
 }
 

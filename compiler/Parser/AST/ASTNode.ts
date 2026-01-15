@@ -34,22 +34,10 @@ export interface ClassDeclaration {
     properties: ClassProperty[];
 }
 
-export interface ExportDeclaration {
-    type: "ExportDeclaration";
-    declaration: ASTNode;
-}
-
 export interface LambdaExpression {
     type: "LambdaExpression";
     params: string[];
     body: ASTNode[];
 }
 
-export type ASTNode =
-    | Program
-    | CallExpression
-    | Literal
-    | Symbol
-    | ClassDeclaration
-    | ExportDeclaration
-    | LambdaExpression;
+export type ASTNode = Program | CallExpression | Literal | Symbol | ClassDeclaration | LambdaExpression;
