@@ -12,7 +12,7 @@ export class Parser {
     private tokens: ReadonlyArray<Token>;
     private current = 0;
 
-    constructor(tokens: ReadonlyArray<Token>) {
+    public constructor(tokens: ReadonlyArray<Token>) {
         this.tokens = tokens;
     }
 
