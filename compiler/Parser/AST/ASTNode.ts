@@ -21,18 +21,22 @@ export interface Symbol {
 }
 
 export interface ClassProperty {
+    kind: "field" | "method" | "constructor";
     visibility: "pub" | "priv";
     name: string;
-    isMethod: boolean;
-    params?: string[]; // for methods
-    body?: ASTNode[]; // for methods
+    params: string[];
+    body: ASTNode[];
 }
 
 export interface ClassDeclaration {
     type: "ClassDeclaration";
     name: string;
-    isExported: boolean;
     properties: ClassProperty[];
 }
 
-export type ASTNode = Program | CallExpression | Literal | Symbol | ClassDeclaration;
+export interface ExportDeclaration {
+    type: "ExportDeclaration";
+    declaration: ASTNode;
+}
+
+export type ASTNode = Program | CallExpression | Literal | Symbol | ClassDeclaration | ExportDeclaration;
