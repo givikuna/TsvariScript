@@ -40,7 +40,7 @@ export interface ExportDeclaration {
 }
 
 export interface LambdaExpression {
-    type: "Lambda Expression";
+    type: "LambdaExpression";
     params: string[];
     body: ASTNode[];
 }

@@ -42,17 +42,47 @@ export class Parser {
         }
 
         if (token.type === "PAREN" && token.value === "(") {
-            // Look at the next token WITHOUT consuming it yet
             const next = this.peek();
 
-            // Check if this is an empty list "()" or a nested expression starting with "("
-            // This is crucial for your (lambda () ( ... )) syntax
             if (!next || (next.type === "PAREN" && next.value === ")")) {
-                this.consume(); // consume the ")"
+                this.consume(); // consume ")"
                 return { type: "CallExpression", callee: "void", arguments: [] };
             }
 
-            // Standard Call: consume the callee
+            if (next.type === "SYMBOL" && next.value === "lambda") {
+                this.consume();
+                this.consume();
+
+                const params: string[] = [];
+                const body: ASTNode[] = [];
+
+                while (this.peek() && this.peek().value !== ")") {
+                    params.push(this.consume().value);
+                }
+
+                this.consume();
+                this.consume();
+
+                while (this.peek() && this.peek().value !== ")") {
+                    body.push(this.walk());
+                }
+
+                this.consume();
+                this.consume();
+
+                return {
+                    type: "LambdaExpression",
+                    params,
+                    body,
+                };
+            }
+
+            if (next.type === "PAREN" && next.value === "(") {
+                const expression = this.walk();
+                this.consume();
+                return expression;
+            }
+
             const calleeToken = this.consume();
             const callExp: CallExpression = {
                 type: "CallExpression",
@@ -60,17 +90,11 @@ export class Parser {
                 arguments: [],
             };
 
-            // Parse arguments until we hit the matching ")"
             while (this.peek() && (this.peek().type !== "PAREN" || this.peek().value !== ")")) {
                 callExp.arguments.push(this.walk());
             }
 
-            // Ensure we consume the closing parenthesis
-            const closingParen = this.consume();
-            if (!closingParen || closingParen.value !== ")") {
-                throw new Error("Missing closing parenthesis");
-            }
-
+            this.consume();
             return callExp;
         }
 
@@ -79,15 +103,23 @@ export class Parser {
 }
 
 console.log(
-    new Parser(
-        tokenize(`(print "hello")
+    JSON.stringify(
+        new Parser(
+            tokenize(`(print "hello")
 (println "hello")
 
 (defvar i (0))
+
+(repeat 5 (lambda () (
+    (print "1")
+)))
 
 (let s ("5"))
 (defvar n (str-to-int (s)))
 (defvar incremented (+ n 1))
 (setf n incremented)`),
-    ).parse(),
+        ).parse(),
+        null,
+        2,
+    ),
 );
