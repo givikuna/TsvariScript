@@ -39,4 +39,17 @@ export interface ExportDeclaration {
     declaration: ASTNode;
 }
 
-export type ASTNode = Program | CallExpression | Literal | Symbol | ClassDeclaration | ExportDeclaration;
+export interface LambdaExpression {
+    type: "Lambda Expression";
+    params: string[];
+    body: ASTNode[];
+}
+
+export type ASTNode =
+    | Program
+    | CallExpression
+    | Literal
+    | Symbol
+    | ClassDeclaration
+    | ExportDeclaration
+    | LambdaExpression;
