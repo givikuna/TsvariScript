@@ -20,19 +20,19 @@ export interface Symbol {
     name: string;
 }
 
-export interface ClassProperty {
-    type: "ClassProperty";
-    kind: "field" | "method" | "constructor";
+export interface ClassMember {
+    type: "ClassMember";
     visibility: "pub" | "priv";
+    kind: "field" | "method" | "constructor";
     name: string;
-    params?: string[];
-    body?: ASTNode[];
+    params: string[];
+    body: ASTNode[];
 }
 
 export interface ClassDeclaration {
     type: "ClassDeclaration";
     name: string;
-    properties: ClassProperty[];
+    members: ClassMember[];
 }
 
 export interface LambdaExpression {

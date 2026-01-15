@@ -91,11 +91,11 @@ export class Parser {
     }
 
     private handleLambda(): LambdaExpression {
-        this.consume();
-        this.consume();
-
-        const body: ASTNode[] = [];
         const params: string[] = [];
+        const body: ASTNode[] = [];
+
+        this.consume();
+        this.consume();
 
         while (this.peek() && this.peek().value !== ")") {
             params.push(this.consume().value);
@@ -147,7 +147,6 @@ export class Parser {
 
     private handleConditional(): ConditionalStatement {
         this.consume();
-        this.consume();
 
         const body: ASTNode[] = [];
         const test = this.walk();
@@ -158,11 +157,7 @@ export class Parser {
 
         this.consume();
 
-        return {
-            type: "ConditionalStatement",
-            test,
-            body,
-        };
+        return { type: "ConditionalStatement", test, body };
     }
 }
 
