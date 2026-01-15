@@ -48,6 +48,12 @@ export interface FunctionDeclaration {
     body: ASTNode[];
 }
 
+export interface ConditionalStatement {
+    type: "ConditionalStatement";
+    test: ASTNode;
+    body: ASTNode[];
+}
+
 export type ASTNode =
     | Program
     | CallExpression
@@ -55,4 +61,5 @@ export type ASTNode =
     | Symbol
     | ClassDeclaration
     | LambdaExpression
-    | FunctionDeclaration;
+    | FunctionDeclaration
+    | ConditionalStatement;
