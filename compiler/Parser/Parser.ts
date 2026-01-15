@@ -1,6 +1,14 @@
 import { Token } from "../Tokenizer/Token";
 import { tokenize } from "../Tokenizer/Lexer";
-import { ASTNode, CallExpression, LambdaExpression, Program } from "./AST/ASTNode";
+import {
+    ASTNode,
+    CallExpression,
+    ClassDeclaration,
+    ClassProperty,
+    FunctionDeclaration,
+    LambdaExpression,
+    Program,
+} from "./AST/ASTNode";
 
 export class Parser {
     private tokens: ReadonlyArray<Token>;
@@ -54,6 +62,10 @@ export class Parser {
                 return this.handleLambda();
             }
 
+            if (next.type === "SYMBOL" && next.value === "defun") {
+                return this.handleFunction();
+            }
+
             if (next.type === "PAREN" && next.value === "(") {
                 const expression = this.walk();
 
@@ -84,8 +96,34 @@ export class Parser {
         this.consume();
         this.consume();
 
-        const params: string[] = [];
         const body: ASTNode[] = [];
+        const params: string[] = [];
+
+        while (this.peek() && this.peek().value !== ")") {
+            params.push(this.consume().value);
+        }
+
+        this.consume();
+        this.consume();
+
+        while (this.peek() && this.peek().value !== ")") {
+            body.push(this.walk());
+        }
+
+        this.consume();
+        this.consume();
+
+        return { type: "LambdaExpression", params, body };
+    }
+
+    private handleFunction(): FunctionDeclaration {
+        this.consume();
+
+        const body: ASTNode[] = [];
+        const name = this.consume().value;
+        const params: string[] = [];
+
+        this.consume();
 
         while (this.peek() && this.peek().value !== ")") {
             params.push(this.consume().value);
@@ -102,7 +140,8 @@ export class Parser {
         this.consume();
 
         return {
-            type: "LambdaExpression",
+            type: "FunctionDeclaration",
+            name,
             params,
             body,
         };
@@ -124,7 +163,14 @@ console.log(
 (let s ("5"))
 (defvar n (str-to-int (s)))
 (defvar incremented (+ n 1))
-(setf n incremented)`),
+(setf n incremented)
+
+(defun decrement (n) (
+    (- n 1)
+))
+
+(let s (lambda (x) (x + 1)))
+`),
         ).parse(),
         null,
         2,

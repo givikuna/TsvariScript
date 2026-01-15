@@ -5,7 +5,7 @@ export interface Program {
 
 export interface CallExpression {
     type: "CallExpression";
-    callee: string; // e.g., "print", "defvar", "+"
+    callee: string;
     arguments: ASTNode[];
 }
 
@@ -17,15 +17,16 @@ export interface Literal {
 
 export interface Symbol {
     type: "Symbol";
-    name: string; // e.g., "i", "n", "this.field"
+    name: string;
 }
 
 export interface ClassProperty {
+    type: "ClassProperty";
     kind: "field" | "method" | "constructor";
     visibility: "pub" | "priv";
     name: string;
-    params: string[];
-    body: ASTNode[];
+    params?: string[];
+    body?: ASTNode[];
 }
 
 export interface ClassDeclaration {
@@ -40,4 +41,18 @@ export interface LambdaExpression {
     body: ASTNode[];
 }
 
-export type ASTNode = Program | CallExpression | Literal | Symbol | ClassDeclaration | LambdaExpression;
+export interface FunctionDeclaration {
+    type: "FunctionDeclaration";
+    name: string;
+    params: string[];
+    body: ASTNode[];
+}
+
+export type ASTNode =
+    | Program
+    | CallExpression
+    | Literal
+    | Symbol
+    | ClassDeclaration
+    | LambdaExpression
+    | FunctionDeclaration;

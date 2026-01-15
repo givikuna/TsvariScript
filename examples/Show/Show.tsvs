@@ -39,3 +39,8 @@
 
 (let doubled (lambda (x) (* x 2)))
 (print (doubled 5))
+
+(defun equals1 (x) (
+    (case (= x 1) (emit true))
+    (case (!= x 1) (emit false))
+))
