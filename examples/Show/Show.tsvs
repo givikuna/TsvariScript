@@ -1,0 +1,41 @@
+(use tsvari-std)
+
+(print "hello")
+(println "hello")
+
+(repeat 5 (lambda () (
+    (print "1")
+)))
+
+(defvar i (0))
+(repeat-while (lambda () (< i 10)) (lambda () (
+    (println i)
+    (setf i (+ 1 i)))
+))
+
+(let s ("5")) ; correlates to let in JS
+(defvar n (str-to-int (s)))
+(defvar incremented (+ n 1))
+(setf n incremented)
+
+(defun decrement (n) (
+    (- n 1)
+))
+
+(print (decrement 1))
+
+(export class ExampleClass
+    (priv field)
+    (constructor (field)
+        (setf this.field field))
+        (void)
+    (pub get-field () (
+        (this.field)
+    )
+    (pub set-field (field) (
+        (setf this.field field)
+        (field)
+    ))))
+
+(let doubled (lambda (x) (* x 2)))
+(print (doubled 5))
