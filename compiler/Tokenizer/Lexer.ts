@@ -14,6 +14,8 @@ export function tokenize(input: string): ReadonlyArray<Token> {
 
         if (char === "(" || char === ")") {
             tokens.push({ type: "PAREN", value: char });
+            idx++;
+            continue;
         }
 
         if (char === '"') {
