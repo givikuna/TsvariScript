@@ -1,21 +1,59 @@
 import { Token } from "./Token";
 
 export function tokenize(input: string): ReadonlyArray<Token> {
-  let currentIndex: number = 0;
-  const tokens: Token[] = [];
+    let idx: number = 0;
+    const tokens: Token[] = [];
 
-  while (currentIndex < input.length) {
-    let currentCharacter: string = input[currentIndex];
+    while (idx < input.length) {
+        let char: string = input[idx];
 
-    if (/\s/.test(currentCharacter)) {
-      currentIndex++;
-      continue;
+        if (/\s/.test(char)) {
+            idx++;
+            continue;
+        }
+
+        if (char === "(" || char === ")") {
+            tokens.push({ type: "PAREN", value: char });
+        }
+
+        if (char === '"') {
+            let value: string = "";
+            char = input[++idx];
+
+            while (char !== '"' && idx < input.length) {
+                value += char;
+                char = input[++idx];
+            }
+
+            idx++;
+            tokens.push({ type: "STRING", value });
+            continue;
+        }
+
+        if (/[0-9]/.test(char)) {
+            let value: string = "";
+
+            while (/[0-9]/.test(char) && idx < input.length) {
+                value += char;
+                char = input[++idx];
+            }
+
+            tokens.push({ type: "NUMBER", value: value });
+            continue;
+        }
+
+        if (/[a-zA-Z\+\-\*\/\<\>\=\!\.]/.test(char)) {
+            let value = "";
+            while (/[a-zA-Z0-9\-\.\?\!\*\+\/\=\>\<]/.test(char) && idx < input.length) {
+                value += char;
+                char = input[++idx];
+            }
+            tokens.push({ type: "SYMBOL", value });
+            continue;
+        }
+
+        throw new TypeError(`Unknown character: ${char}`);
     }
 
-    if (currentCharacter === "(" || currentCharacter === ")") {
-      tokens.push({ type: "PAREN", value: currentCharacter });
-    }
-  }
-
-  return [];
+    return tokens;
 }
