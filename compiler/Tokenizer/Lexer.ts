@@ -1,5 +1,9 @@
 import { Token } from "./Token";
 
+export class Lexer {
+    //
+}
+
 export function tokenize(input: string): ReadonlyArray<Token> {
     let idx: number = 0;
     const tokens: Token[] = [];

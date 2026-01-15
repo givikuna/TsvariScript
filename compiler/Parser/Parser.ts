@@ -1,5 +1,4 @@
 import { Token } from "../Tokenizer/Token";
-import { tokenize } from "../Tokenizer/Lexer";
 import {
     ASTNode,
     CallExpression,
@@ -25,7 +24,7 @@ export class Parser {
         return this.tokens[this.current++];
     }
 
-    parse(): Program {
+    public parse(): Program {
         const program: Program = { type: "Program", body: [] };
         while (this.current < this.tokens.length) {
             program.body.push(this.walk());
@@ -160,37 +159,3 @@ export class Parser {
         return { type: "ConditionalStatement", test, body };
     }
 }
-
-console.log(
-    JSON.stringify(
-        new Parser(
-            tokenize(`(print "hello")
-(println "hello")
-
-(defvar i (0))
-
-(repeat 5 (lambda () (
-    (print "1")
-)))
-
-(let s ("5"))
-(defvar n (str-to-int (s)))
-(defvar incremented (+ n 1))
-(setf n incremented)
-
-(defun decrement (n) (
-    (- n 1)
-))
-
-(let s (lambda (x) (x + 1)))
-
-(defun equals1 (x) (
-    (case (= x 1) (emit true))
-    (case (!= x 1) (emit false))
-))
-`),
-        ).parse(),
-        null,
-        2,
-    ),
-);
