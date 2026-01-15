@@ -1,3 +1,9 @@
+import {
+    PropertyVisibility,
+    PropertyKind,
+    LiteralKind,
+} from "../../../types/types";
+
 export interface Program {
     type: "Program";
     body: ASTNode[];
@@ -12,8 +18,9 @@ export interface CallExpression {
 export interface Literal {
     type: "Literal";
     value: string | number | boolean;
-    kind: "string" | "number" | "boolean";
+    kind: LiteralKind;
 }
+
 
 export interface Symbol {
     type: "Symbol";
@@ -22,12 +29,13 @@ export interface Symbol {
 
 export interface ClassMember {
     type: "ClassMember";
-    visibility: "pub" | "priv";
-    kind: "field" | "method" | "constructor";
+    visibility: PropertyVisibility;
+    kind: PropertyKind;
     name: string;
     params: string[];
     body: ASTNode[];
 }
+
 
 export interface ClassDeclaration {
     type: "ClassDeclaration";
