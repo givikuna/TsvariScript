@@ -1,14 +1,6 @@
 import { Token } from "../Tokenizer/Token";
 import { tokenize } from "../Tokenizer/Lexer";
-import {
-    ASTNode,
-    CallExpression,
-    ClassDeclaration,
-    ClassProperty,
-    FunctionDeclaration,
-    LambdaExpression,
-    Program,
-} from "./AST/ASTNode";
+import { ASTNode, CallExpression, FunctionDeclaration, LambdaExpression, Program } from "./AST/ASTNode";
 
 export class Parser {
     private tokens: ReadonlyArray<Token>;
