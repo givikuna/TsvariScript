@@ -1,4 +1,8 @@
 {
+  "private": true,
+  "scripts": {
+    "test": "mocha -r ts-node/register test/**/*.test.ts"
+  },
   "dependencies": {
     "typescript": "^5.9.3"
   },
@@ -11,8 +15,3 @@
     "ts-node": "^10.9.2"
   }
 }
-
-"scripts": {
-  "test": "mocha -r ts-node/register test/**/*.test.ts"
-}
-
